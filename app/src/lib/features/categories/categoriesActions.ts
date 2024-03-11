@@ -1,13 +1,13 @@
 import axiosClient from "@/lib/axios-client";
 import { SerializedError, createAsyncThunk } from "@reduxjs/toolkit";
 
-export const getProducts = createAsyncThunk<
+export const getCategories = createAsyncThunk<
   void,
   void,
   { rejectValue: SerializedError }
->("/products/getAll", async (_, { rejectWithValue }) => {
+>("/categories/getAll", async (_, { rejectWithValue }) => {
   try {
-    const { data } = await axiosClient.get("/products");
+    const { data } = await axiosClient.get("/category");
     return data;
   } catch (error: any) {
     if (error.response && error.response.data.message) {

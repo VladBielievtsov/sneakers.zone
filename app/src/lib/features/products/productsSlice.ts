@@ -1,11 +1,13 @@
 import { SerializedError, createSlice } from "@reduxjs/toolkit";
 import { getProducts } from "./productsActions";
+import { ICategory } from "../categories/categoriesSlice";
 
 export interface IProduct {
   id: number;
   title: string;
   description: string;
   price: string;
+  category: ICategory;
   created_at: string;
 }
 
