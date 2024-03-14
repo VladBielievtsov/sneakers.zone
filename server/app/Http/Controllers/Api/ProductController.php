@@ -7,15 +7,24 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return ProductResource::collection(Product::with('category')->orderBy('id', 'desc')->paginate(4));
+        $query = Product::query();
+        if ($request->has('category')) {
+            $categories = $request->input('category');
+            $query->whereHas('category', function ($q) use ($categories) {
+                $q->whereIn('name', $categories);
+            });
+        }
+        $products = $query->with('category')->orderBy('id', 'desc')->paginate(4);
+        return ProductResource::collection($products);
     }
 
     /**

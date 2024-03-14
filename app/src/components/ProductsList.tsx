@@ -2,9 +2,13 @@ import ProductCard from "@/components/ProductCard";
 import { getProducts } from "@/lib/features/products/productsActions";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
-import { useLayoutEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function ProductsList() {
+  const searchParams = useSearchParams();
+  const categories = searchParams.getAll("category");
+
   const dispatch = useAppDispatch();
 
   const productsStatus = useAppSelector(
@@ -13,11 +17,9 @@ export default function ProductsList() {
 
   let { products } = useAppSelector((state: RootState) => state.products);
 
-  useLayoutEffect(() => {
-    if (productsStatus === "idle") {
-      dispatch(getProducts());
-    }
-  }, [productsStatus, dispatch]);
+  useEffect(() => {
+    dispatch(getProducts(categories));
+  }, []);
 
   let content = null;
 

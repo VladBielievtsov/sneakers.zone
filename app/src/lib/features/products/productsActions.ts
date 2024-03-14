@@ -3,11 +3,18 @@ import { SerializedError, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getProducts = createAsyncThunk<
   void,
-  void,
+  string[],
   { rejectValue: SerializedError }
->("/products/getAll", async (_, { rejectWithValue }) => {
+>("/products/getAll", async (categories, { rejectWithValue }) => {
   try {
-    const { data } = await axiosClient.get("/products");
+    let url = "/products";
+    if (categories.length > 0) {
+      const categoryParams = categories
+        .map((category) => `category[]=${encodeURIComponent(category)}`)
+        .join("&");
+      url += `?${categoryParams}`;
+    }
+    const { data } = await axiosClient.get(url);
     return data;
   } catch (error: any) {
     if (error.response && error.response.data.message) {

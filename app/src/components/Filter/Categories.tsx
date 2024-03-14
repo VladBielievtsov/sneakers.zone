@@ -40,9 +40,9 @@ export default function useCategories() {
 
   useEffect(() => {
     const arr =
-      categories?.map((c) => ({
+      categories?.map((c, id) => ({
         ...c,
-        checked: searchParams.get("category") === c.name ? true : false,
+        checked: searchParams.getAll("category").includes(c.name),
       })) || [];
     setNewCategories(arr);
   }, [categories]);
