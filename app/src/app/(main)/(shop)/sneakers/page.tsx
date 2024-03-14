@@ -8,7 +8,7 @@ export default function Sneakers() {
     <div className="pt-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">New Arrivals</h2>
+          <h1 className="text-2xl font-bold">New Arrivals</h1>
         </div>
       </div>
       <div className="grid grid-cols-4 gap-6 pt-6">

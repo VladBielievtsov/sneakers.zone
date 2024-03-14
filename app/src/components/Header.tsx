@@ -19,6 +19,7 @@ import {
 } from "./ui/dropdown-menu";
 import axiosClient from "@/lib/axios-client";
 import { logout } from "@/lib/features/auth/authSlice";
+import Cart from "./Cart";
 
 export default function Header() {
   const { userInfo } = useAppSelector((state: RootState) => state.auth);
@@ -39,7 +40,7 @@ export default function Header() {
     >
       <div className="flex items-center justify-between px-6 py-4">
         <div className="lg:pr-6">
-          <Link href={"/"} className="text-2xl">
+          <Link href={"/sneakers"} className="text-2xl">
             <span className="text-xl">Sneakers.zone</span>
           </Link>
         </div>
@@ -47,9 +48,12 @@ export default function Header() {
           <Input type="text" placeholder="Search" className=" w-full" />
         </div>
         <div className="flex justify-end lg:pl-6 space-x-2">
-          <Button className="text-2xl" variant={"ghost"}>
-            <MdOutlineShoppingBag />
-          </Button>
+          {/* <Button className="text-2xl" variant={"ghost"} asChild>
+            <Link href={"/cart"}>
+              <MdOutlineShoppingBag />
+            </Link>
+          </Button> */}
+          <Cart />
           {!!userInfo ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-0">
