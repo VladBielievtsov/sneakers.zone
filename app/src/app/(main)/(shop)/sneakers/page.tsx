@@ -11,7 +11,7 @@ export default function Sneakers() {
           <h1 className="text-2xl font-bold">New Arrivals</h1>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-6 pt-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6">
         <ProductsList />
       </div>
     </div>
