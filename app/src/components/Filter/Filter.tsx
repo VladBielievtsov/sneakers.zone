@@ -6,7 +6,8 @@ import useCategories from "./Categories";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/lib/hooks";
 import { getProducts } from "@/lib/features/products/productsActions";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
+import Price from "./Price";
 
 export default function Filter() {
   const pathname = usePathname();
@@ -37,6 +38,9 @@ export default function Filter() {
   return (
     <nav className="h-full flex flex-col border-r pt-4">
       <div>{renderCategories}</div>
+      <div>
+        <Price />
+      </div>
       <div className="w-full p-6">
         <Button className="w-full" onClick={onApply}>
           Apply
