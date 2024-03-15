@@ -8,7 +8,7 @@ const SliderPrice = forwardRef<
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
 >(({ ...props }, ref) => {
   const [minValue, setMinValue] = useState(0);
-  const [maxValue, setMaxValue] = useState(100);
+  const [maxValue, setMaxValue] = useState(props.max || 100);
 
   const handleMinValueChange = useCallback(
     (value: number) => {

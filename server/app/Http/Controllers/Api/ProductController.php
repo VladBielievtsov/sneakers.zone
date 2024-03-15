@@ -24,7 +24,17 @@ class ProductController extends Controller
             });
         }
         $products = $query->with('category')->orderBy('id', 'desc')->paginate(4);
-        return ProductResource::collection($products);
+
+        $minPrice = Product::min('price');
+        $maxPrice = Product::max('price');
+
+        return [
+            'products' => ProductResource::collection($products),
+            'min_price' => $minPrice,
+            'max_price' => $maxPrice
+        ];
+
+
     }
 
     /**
