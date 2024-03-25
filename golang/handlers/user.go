@@ -35,7 +35,7 @@ func Signup(c *fiber.Ctx) error {
 	if err := database.DB.Create(&newUser).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create user"})
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": &newUser}})
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": models.FilterUser(&newUser)}})
 }
 
 func Login(c *fiber.Ctx) error {
@@ -79,7 +79,7 @@ func Login(c *fiber.Ctx) error {
 		HTTPOnly: true,
 		Domain:   "localhost",
 	})
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"token": tokenString, "user": user}})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"token": tokenString, "user": models.FilterUser(&user)}})
 }
 
 func Logout(c *fiber.Ctx) error {
@@ -93,6 +93,6 @@ func Logout(c *fiber.Ctx) error {
 }
 
 func GetMe(c *fiber.Ctx) error {
-	user := c.Locals("user").(*models.User)
+	user := c.Locals("user").(models.UserResponse)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": user}})
 }
