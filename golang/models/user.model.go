@@ -11,6 +11,7 @@ type User struct {
 	Fullname  string     `gorm:"varchar(255);not null"`
 	Email     string     `gorm:"varchar(255);unique;not null"`
 	Password  string     `gorm:"varchar(255);not null"`
+	GoogleID  string     `gorm:"varchar(255);unique"`
 	CreatedAt *time.Time `gorm:"not null;default:now()"`
 	UpdatedAt *time.Time `gorm:"not null;default:now()"`
 }

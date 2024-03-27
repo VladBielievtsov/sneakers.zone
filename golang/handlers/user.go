@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -8,9 +9,11 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	"github.com/vladbielievtsov/sneakers/config"
 	"github.com/vladbielievtsov/sneakers/database"
 	"github.com/vladbielievtsov/sneakers/models"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/oauth2"
 )
 
 func Signup(c *fiber.Ctx) error {
@@ -95,4 +98,56 @@ func Logout(c *fiber.Ctx) error {
 func GetMe(c *fiber.Ctx) error {
 	user := c.Locals("user").(models.UserResponse)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": user}})
+}
+
+func Google(c *fiber.Ctx) error {
+	url := config.GetGoogleOauthConfig().AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	return c.Redirect(url)
+}
+
+func GoogleCallBack(c *fiber.Ctx) error {
+	code := c.Query("code")
+	token, err := config.GetGoogleOauthConfig().Exchange(oauth2.NoContext, code)
+	if err != nil {
+		return err
+	}
+
+	client := config.GetGoogleOauthConfig().Client(oauth2.NoContext, token)
+	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	var googleUser struct {
+		Email string `json:"email"`
+		Name  string `json:"name"`
+		ID    string `json:"id"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&googleUser); err != nil {
+		return err
+	}
+
+	var existingUser models.User
+	if err := database.DB.Where("email = ?", googleUser.Email).First(&existingUser).Error; err != nil {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(googleUser.ID), bcrypt.DefaultCost)
+		newUser := models.User{
+			Fullname: googleUser.Name,
+			Email:    googleUser.Email,
+			Password: string(hashedPassword),
+			GoogleID: googleUser.ID,
+		}
+
+		if err := database.DB.Create(&newUser).Error; err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create user"})
+		}
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": models.FilterUser(&newUser)}})
+	} else {
+		existingUser.GoogleID = googleUser.ID
+		database.DB.Save(&existingUser)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": models.FilterUser(&existingUser)}})
 }

@@ -23,7 +23,6 @@ func Start() error {
 		return nil
 	}
 
-	database.DB = database.DB.Debug()
 	// defer Close database
 
 	// creat app
