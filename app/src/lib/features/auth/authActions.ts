@@ -13,7 +13,7 @@ export const signup = createAsyncThunk<
   "/auth/signup",
   async ({ fullname, username, email, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.post("/signup", {
+      const { data } = await axiosClient.post("/auth/signup", {
         fullname,
         username,
         email,
@@ -36,7 +36,7 @@ export const login = createAsyncThunk<
   { rejectValue: SerializedError }
 >("/auth/login", async ({ email, password }, { rejectWithValue }) => {
   try {
-    const { data } = await axiosClient.post("/login", {
+    const { data } = await axiosClient.post("/auth/login", {
       email,
       password,
     });

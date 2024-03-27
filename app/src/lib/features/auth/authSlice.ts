@@ -51,9 +51,9 @@ const authSlice = createSlice({
     builder.addCase(signup.fulfilled, (state, { payload }) => {
       state.loading = false;
       //@ts-ignore
-      state.userInfo = payload.user;
+      state.userInfo = payload.data.user;
       //@ts-ignore
-      state.token = payload.token;
+      state.token = payload.data.token;
     });
     builder.addCase(signup.rejected, (state, { payload }) => {
       state.loading = false;
@@ -67,9 +67,9 @@ const authSlice = createSlice({
     builder.addCase(login.fulfilled, (state, { payload }) => {
       state.loading = false;
       //@ts-ignore
-      state.userInfo = payload.user;
+      state.userInfo = payload.data.user;
       //@ts-ignore
-      state.token = payload.token;
+      state.token = payload.data.token;
     });
     builder.addCase(login.rejected, (state, { payload }) => {
       state.loading = false;
@@ -83,7 +83,7 @@ const authSlice = createSlice({
     builder.addCase(user.fulfilled, (state, { payload }) => {
       state.loading = false;
       //@ts-ignore
-      state.userInfo = payload;
+      state.userInfo = payload.data.user;
     });
     builder.addCase(user.rejected, (state, { payload }) => {
       state.loading = false;

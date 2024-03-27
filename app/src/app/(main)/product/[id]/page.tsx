@@ -12,8 +12,9 @@ export default function page({ params }: { params: { id: string } }) {
 
   const getProduct = async () => {
     try {
-      const { data } = await axiosClient.get(`/products/${params.id}`);
-      setProduct(data.data);
+      const { data } = await axiosClient.get(`/product/${params.id}`);
+      setProduct(data.data.product);
+      
     } catch (error) {
       console.log(error);
     }
@@ -35,7 +36,7 @@ export default function page({ params }: { params: { id: string } }) {
               <h1 className="text-3xl font-bold">
                 {product ? product?.title : "Loading..."}
               </h1>
-              <p className="mt-4">CATEGORY: {product?.category.name}</p>
+              {/* <p className="mt-4">CATEGORY: {product?.category.name}</p> */}
             </div>
             <div className="mt-6">Select Size</div>
             <div className="mt-6">

@@ -42,7 +42,7 @@ const productsSlice = createSlice({
     builder.addCase(getProducts.fulfilled, (state, { payload }) => {
       state.status = "succeeded";
       //@ts-ignore
-      state.products = payload.products;
+      state.products = payload.data.products;
       //@ts-ignore
       state.min_price = payload.min_price;
       //@ts-ignore

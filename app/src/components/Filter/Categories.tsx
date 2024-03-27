@@ -59,9 +59,9 @@ export default function useCategories() {
     categories: newCategories,
     renderCategories: (
       <Accordion type="single" collapsible defaultValue="item-1">
-        <AccordionItem value="item-1">
-          <AccordionTrigger className="px-6">Categories</AccordionTrigger>
-          <AccordionContent className="px-6 space-y-4">
+        <AccordionItem value="item-1" className="border-0">
+          <AccordionTrigger className="">Categories</AccordionTrigger>
+          <AccordionContent className="space-y-4">
             {newCategories?.map((c) => (
               <div className="" key={c.id}>
                 <Label className="flex items-center space-x-2 cursor-pointer">

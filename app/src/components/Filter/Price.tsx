@@ -34,9 +34,9 @@ export default function Price() {
 
   return (
     <Accordion type="single" collapsible defaultValue="item-1">
-      <AccordionItem value="item-1">
-        <AccordionTrigger className="px-6">Price</AccordionTrigger>
-        <AccordionContent className="px-6 space-y-4 pt-2.5">
+      <AccordionItem value="item-1" className="border-0">
+        <AccordionTrigger className="">Price</AccordionTrigger>
+        <AccordionContent className="space-y-4 pt-2.5">
           {maxValue && (
             <>
               <SliderPrice

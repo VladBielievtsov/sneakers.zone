@@ -36,12 +36,12 @@ export default function Filter() {
   }, [searchParams]);
 
   return (
-    <nav className="h-full flex flex-col border-r pt-4">
+    <nav className="h-full flex flex-col">
       <div>{renderCategories}</div>
       <div>
         <Price />
       </div>
-      <div className="w-full p-6">
+      <div className="w-full pt-6">
         <Button className="w-full" onClick={onApply}>
           Apply
         </Button>

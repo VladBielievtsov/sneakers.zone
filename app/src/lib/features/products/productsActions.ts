@@ -7,7 +7,7 @@ export const getProducts = createAsyncThunk<
   { rejectValue: SerializedError }
 >("/products/getAll", async (categories, { rejectWithValue }) => {
   try {
-    let url = "/products";
+    let url = "/product";
     if (categories.length > 0) {
       const categoryParams = categories
         .map((category) => `category[]=${encodeURIComponent(category)}`)

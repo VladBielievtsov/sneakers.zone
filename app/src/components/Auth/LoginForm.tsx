@@ -55,7 +55,8 @@ export default function LoginForm() {
       setIsError("User not found");
     } else {
       // @ts-ignore
-      setCookie("ACCESS_TOKEN", res.payload?.token);
+      setCookie("ACCESS_TOKEN", res.payload?.data.token);
+      
       router.push("/sneakers");
     }
   }

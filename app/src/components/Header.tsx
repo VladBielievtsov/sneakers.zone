@@ -20,6 +20,7 @@ import {
 import axiosClient from "@/lib/axios-client";
 import { logout } from "@/lib/features/auth/authSlice";
 import Cart from "./Cart";
+import SearchInput from "./SearchInput";
 
 export default function Header() {
   const { userInfo } = useAppSelector((state: RootState) => state.auth);
@@ -27,7 +28,7 @@ export default function Header() {
   const dispatch = useAppDispatch();
 
   const onLogout = () => {
-    axiosClient.post("/logout").then(() => {
+    axiosClient.post("/auth/logout").then(() => {
       dispatch(logout());
     });
   };
@@ -35,17 +36,17 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "bg-color border-b border-zinc-200 fixed left-0 right-0 top-0 z-50  backdrop-blur-sm"
+        "bg-color fixed left-0 right-0 top-0 z-50  backdrop-blur-sm"
       )}
     >
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="lg:pr-6">
           <Link href={"/sneakers"} className="text-2xl">
             <span className="text-xl">Sneakers.zone</span>
           </Link>
         </div>
         <div className="max-w-2xl w-full">
-          <Input type="text" placeholder="Search" className=" w-full" />
+          <SearchInput />
         </div>
         <div className="flex justify-end lg:pl-6 space-x-2">
           {/* <Button className="text-2xl" variant={"ghost"} asChild>

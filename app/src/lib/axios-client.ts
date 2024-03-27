@@ -4,7 +4,7 @@ import { deleteCookie, getCookie } from "cookies-next";
 // process.env.API_BASE_URL
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "http://localhost:8080/api",
 });
 
 axiosClient.interceptors.request.use((config) => {

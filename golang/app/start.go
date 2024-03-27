@@ -34,9 +34,9 @@ func Start() error {
 
 	// attach middleware
 	// cors, etc...
-	app.Use(cors.New(cors.Config{
+	micro.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000",
-		AllowHeaders:     "Origin, Content-Type, Accept",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowMethods:     "GET, POST",
 		AllowCredentials: true,
 	}))
