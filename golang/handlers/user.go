@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/smtp"
 	"os"
 	"strings"
 	"time"
@@ -12,6 +14,7 @@ import (
 	"github.com/vladbielievtsov/sneakers/config"
 	"github.com/vladbielievtsov/sneakers/database"
 	"github.com/vladbielievtsov/sneakers/models"
+	"github.com/vladbielievtsov/sneakers/utils"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
 )
@@ -29,15 +32,40 @@ func Signup(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": err.Error()})
 	}
 
+	encodedPassword := base64.StdEncoding.EncodeToString(hashedPassword)
+
+	token, err := utils.GenerateToken()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create token"})
+	}
+
 	newUser := models.User{
-		Fullname: payload.Fullname,
-		Email:    strings.ToLower(payload.Email),
-		Password: string(hashedPassword),
+		Fullname:          payload.Fullname,
+		Email:             strings.ToLower(payload.Email),
+		Password:          encodedPassword,
+		GoogleID:          nil,
+		ConfirmationToken: token,
 	}
 
 	if err := database.DB.Create(&newUser).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create user"})
 	}
+
+	auth := config.SendMail()
+	msg := "Subject: Sneakers - Email Confirmation\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<html><body><p>Confirm Email: <a href='http://localhost:8080/api/auth/confirm/" + token + "'>Confirmation Link</a></p></body></html>\r\n"
+
+	err = smtp.SendMail(
+		"smtp.gmail.com:587",
+		auth,
+		os.Getenv("SMTPFrom"),
+		[]string{strings.ToLower(payload.Email)},
+		[]byte(msg),
+	)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to send confirmation email"})
+	}
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": models.FilterUser(&newUser)}})
 }
 
@@ -137,7 +165,7 @@ func GoogleCallBack(c *fiber.Ctx) error {
 			Fullname: googleUser.Name,
 			Email:    googleUser.Email,
 			Password: string(hashedPassword),
-			GoogleID: googleUser.ID,
+			GoogleID: &googleUser.ID,
 		}
 
 		if err := database.DB.Create(&newUser).Error; err != nil {
@@ -145,7 +173,7 @@ func GoogleCallBack(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": models.FilterUser(&newUser)}})
 	} else {
-		existingUser.GoogleID = googleUser.ID
+		existingUser.GoogleID = &googleUser.ID
 		database.DB.Save(&existingUser)
 	}
 

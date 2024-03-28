@@ -7,13 +7,15 @@ import (
 )
 
 type User struct {
-	ID        *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Fullname  string     `gorm:"varchar(255);not null"`
-	Email     string     `gorm:"varchar(255);unique;not null"`
-	Password  string     `gorm:"varchar(255);not null"`
-	GoogleID  string     `gorm:"varchar(255);unique"`
-	CreatedAt *time.Time `gorm:"not null;default:now()"`
-	UpdatedAt *time.Time `gorm:"not null;default:now()"`
+	ID                *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	Fullname          string     `gorm:"varchar(255);not null"`
+	Email             string     `gorm:"varchar(255);unique;not null"`
+	Password          string     `gorm:"varchar(255);not null"`
+	GoogleID          *string    `gorm:"varchar(255);unique"`
+	IsConfirmed       bool       `gorm:"not null;default:false"`
+	ConfirmationToken string     `gorm:"varchar(255)"`
+	CreatedAt         *time.Time `gorm:"not null;default:now()"`
+	UpdatedAt         *time.Time `gorm:"not null;default:now()"`
 }
 
 type UserResponse struct {
