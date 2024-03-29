@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/smtp"
@@ -32,8 +31,6 @@ func Signup(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": err.Error()})
 	}
 
-	encodedPassword := base64.StdEncoding.EncodeToString(hashedPassword)
-
 	token, err := utils.GenerateToken()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create token"})
@@ -42,7 +39,7 @@ func Signup(c *fiber.Ctx) error {
 	newUser := models.User{
 		Fullname:          payload.Fullname,
 		Email:             strings.ToLower(payload.Email),
-		Password:          encodedPassword,
+		Password:          string(hashedPassword),
 		GoogleID:          nil,
 		ConfirmationToken: token,
 	}
@@ -69,6 +66,24 @@ func Signup(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": models.FilterUser(&newUser)}})
 }
 
+func Confirmation(c *fiber.Ctx) error {
+	var token = c.Params("token")
+
+	var user models.User
+	result := database.DB.First(&user, "confirmation_token = ?", token)
+	if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid token"})
+	}
+
+	user.IsConfirmed = true
+	user.ConfirmationToken = ""
+
+	if err := database.DB.Save(&user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to confiem email", "error": err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": user}})
+}
+
 func Login(c *fiber.Ctx) error {
 	var payload *models.LoginRequest
 
@@ -82,9 +97,13 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password"})
 	}
 
+	if !user.IsConfirmed {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Email is not confirmed"})
+	}
+
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password", "error": err.Error()})
 	}
 
 	tokenByte := jwt.New(jwt.SigningMethodHS256)

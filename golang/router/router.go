@@ -14,6 +14,8 @@ func Routes(micro *fiber.App) {
 		router.Post("/login", handlers.Login)
 		router.Post("/logout", middleware.DeserializeUser, handlers.Logout)
 
+		router.Get("/confirm/:token", handlers.Confirmation)
+
 		router.Get("/google", handlers.Google)
 		router.Get("/google/callback", handlers.GoogleCallBack)
 	})
