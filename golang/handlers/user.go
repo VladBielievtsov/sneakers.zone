@@ -112,6 +112,7 @@ func Login(c *fiber.Ctx) error {
 
 	claims["sub"] = user.ID
 	claims["exp"] = now.Add(120 * time.Minute).Unix()
+	claims["role"] = user.Role
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()
 
@@ -129,10 +130,14 @@ func Login(c *fiber.Ctx) error {
 		HTTPOnly: true,
 		Domain:   "localhost",
 	})
+
+	c.Locals("user", user)
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"token": tokenString, "user": models.FilterUser(&user)}})
 }
 
 func Logout(c *fiber.Ctx) error {
+	c.Locals("user", nil)
 	expired := time.Now().Add(-time.Hour * 24)
 	c.Cookie(&fiber.Cookie{
 		Name:    "token",
@@ -196,5 +201,6 @@ func GoogleCallBack(c *fiber.Ctx) error {
 		database.DB.Save(&existingUser)
 	}
 
+	c.Locals("user", &existingUser)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": models.FilterUser(&existingUser)}})
 }

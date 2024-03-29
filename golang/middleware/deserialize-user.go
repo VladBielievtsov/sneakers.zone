@@ -49,6 +49,9 @@ func DeserializeUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
 	}
 
+	role := claims["role"].(string)
+
+	c.Locals("role", role)
 	c.Locals("user", models.FilterUser(&user))
 
 	return c.Next()

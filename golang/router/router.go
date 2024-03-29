@@ -23,10 +23,10 @@ func Routes(micro *fiber.App) {
 	micro.Get("/user", middleware.DeserializeUser, handlers.GetMe)
 
 	micro.Route("/product", func(router fiber.Router) {
-		router.Post("/", handlers.Store)
+		router.Post("/", middleware.DeserializeUser, handlers.Store)
 		router.Get("/", handlers.FindAll)
 		router.Get("/:id", handlers.FindById)
-		router.Put("/:id", handlers.Update)
-		router.Delete("/:id", handlers.Delete)
+		router.Put("/:id", middleware.DeserializeUser, handlers.Update)
+		router.Delete("/:id", middleware.DeserializeUser, handlers.Delete)
 	})
 }

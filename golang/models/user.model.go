@@ -13,6 +13,7 @@ type User struct {
 	Password          string     `gorm:"varchar(255);not null"`
 	GoogleID          *string    `gorm:"varchar(255);unique"`
 	IsConfirmed       bool       `gorm:"not null;default:false"`
+	Role              string     `gorm:"varchar(50);not null;default:'user'"`
 	ConfirmationToken string     `gorm:"varchar(255)"`
 	CreatedAt         *time.Time `gorm:"not null;default:now()"`
 	UpdatedAt         *time.Time `gorm:"not null;default:now()"`

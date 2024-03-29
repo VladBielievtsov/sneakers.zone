@@ -7,7 +7,16 @@ import (
 	"github.com/vladbielievtsov/sneakers/models"
 )
 
+const IsAdmin = "admin"
+
 func Store(c *fiber.Ctx) error {
+
+	isAdmin := c.Locals("role").(string)
+
+	if isAdmin != IsAdmin {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "You are not admin"})
+	}
+
 	var payload *models.ProductRequest
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": err.Error()})
@@ -56,6 +65,12 @@ func FindById(c *fiber.Ctx) error {
 }
 
 func Update(c *fiber.Ctx) error {
+	isAdmin := c.Locals("role").(string)
+
+	if isAdmin != IsAdmin {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "You are not admin"})
+	}
+
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "ID parameter is required"})
@@ -88,6 +103,12 @@ func Update(c *fiber.Ctx) error {
 }
 
 func Delete(c *fiber.Ctx) error {
+	isAdmin := c.Locals("role").(string)
+
+	if isAdmin != IsAdmin {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "You are not admin"})
+	}
+
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "ID parameter is required"})
