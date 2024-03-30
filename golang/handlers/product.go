@@ -17,7 +17,7 @@ func Store(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "You are not admin"})
 	}
 
-	var payload *models.ProductRequest
+	var payload models.ProductRequest
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": err.Error()})
 	}
@@ -33,6 +33,14 @@ func Store(c *fiber.Ctx) error {
 		Price:       price,
 	}
 
+	for _, size := range payload.Sizes {
+		newSize := models.Size{
+			Size:     size.Size,
+			Quantity: size.Quantity,
+		}
+		newProduct.Sizes = append(newProduct.Sizes, newSize)
+	}
+
 	if err := database.DB.Create(&newProduct).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create product", "error": err.Error()})
 	}
@@ -41,7 +49,7 @@ func Store(c *fiber.Ctx) error {
 
 func FindAll(c *fiber.Ctx) error {
 	var products []models.Product
-	result := database.DB.Find(&products)
+	result := database.DB.Preload("Sizes").Find(&products)
 	if result.Error != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "Products not found"})
 	}
@@ -55,7 +63,7 @@ func FindById(c *fiber.Ctx) error {
 	}
 
 	var product models.Product
-	result := database.DB.First(&product, "id = ?", id)
+	result := database.DB.Preload("Sizes").First(&product, "id = ?", id)
 
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Product not found"})
@@ -77,7 +85,7 @@ func Update(c *fiber.Ctx) error {
 	}
 
 	var product models.Product
-	result := database.DB.First(&product, "id = ?", id)
+	result := database.DB.Preload("Sizes").First(&product, "id = ?", id)
 
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Product not found"})
@@ -96,10 +104,25 @@ func Update(c *fiber.Ctx) error {
 	}
 	product.Price = price
 
-	if err := database.DB.Save(&product).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create product", "error": err.Error()})
+	if err := database.DB.Where("product_id = ?", id).Delete(&models.Size{}).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to delete old sizes", "error": err.Error()})
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"product": product}})
+
+	product.Sizes = nil
+
+	for _, size := range payload.Sizes {
+		newSize := models.Size{
+			Size:      size.Size,
+			Quantity:  size.Quantity,
+			ProductID: product.ID,
+		}
+		product.Sizes = append(product.Sizes, newSize)
+	}
+
+	if err := database.DB.Save(&product).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to update product", "error": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": fiber.Map{"product": product}})
 }
 
 func Delete(c *fiber.Ctx) error {
@@ -115,15 +138,19 @@ func Delete(c *fiber.Ctx) error {
 	}
 
 	var product models.Product
-	result := database.DB.First(&product, "id = ?", id)
+	result := database.DB.Preload("Sizes").First(&product, "id = ?", id)
 	if result.Error != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "Product not found"})
 	}
 
-	if err := database.DB.Delete(&product).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create product", "error": err.Error()})
+	if err := database.DB.Delete(&product.Sizes).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to delete sizes", "error": err.Error()})
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "message": "Product deleted successfully"})
+
+	if err := database.DB.Delete(&product).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to delete product", "error": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Product deleted successfully"})
 }
 
 // func saveFile(file *multipart.FileHeader, filename string) error {

@@ -8,7 +8,6 @@ import (
 	"github.com/vladbielievtsov/sneakers/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
@@ -31,9 +30,8 @@ func ConnetcDB() error {
 	}
 
 	DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
-	DB.Logger = logger.Default.LogMode(logger.Info)
 
-	err = DB.AutoMigrate(&models.User{}, &models.Product{})
+	err = DB.AutoMigrate(&models.User{}, &models.Product{}, &models.Size{})
 	if err != nil {
 		log.Fatal("Migration Failed:  \n", err.Error())
 		os.Exit(1)
