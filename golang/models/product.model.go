@@ -20,6 +20,7 @@ type Product struct {
 	Description string          `gorm:"varchar(255);not null" json:"description"`
 	Price       decimal.Decimal `gorm:"type:decimal(10,2);not null" json:"price"`
 	Sizes       []Size          `gorm:"foreignKey:ProductID" json:"sizes"`
+	Category    string          `gorm:"varchar(255);not null" json:"category"`
 	CreatedAt   *time.Time      `gorm:"not null;default:now()" json:"createdAt"`
 	UpdatedAt   *time.Time      `gorm:"not null;default:now()" json:"updatedAt"`
 }
@@ -29,4 +30,5 @@ type ProductRequest struct {
 	Description string          `json:"description"`
 	Price       decimal.Decimal `json:"price"`
 	Sizes       []Size          `json:"sizes"`
+	Category    string          `json:"category"`
 }

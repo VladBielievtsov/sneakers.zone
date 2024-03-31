@@ -2,14 +2,10 @@ import ProductCard from "@/components/ProductCard";
 import { getProducts } from "@/lib/features/products/productsActions";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
-import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductsList() {
-  const searchParams = useSearchParams();
-  const categories = searchParams.getAll("category");
-
   const dispatch = useAppDispatch();
 
   const productsStatus = useAppSelector(
@@ -19,7 +15,9 @@ export default function ProductsList() {
   let { products } = useAppSelector((state: RootState) => state.products);
 
   useEffect(() => {
-    dispatch(getProducts(categories));
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const queryString = new URLSearchParams(Object.fromEntries(urlSearchParams.entries())).toString();
+    dispatch(getProducts(queryString));
   }, []);
 
   let content = null;

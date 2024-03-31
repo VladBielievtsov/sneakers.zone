@@ -31,6 +31,7 @@ func Store(c *fiber.Ctx) error {
 		Title:       payload.Title,
 		Description: payload.Description,
 		Price:       price,
+		Category:    payload.Category,
 	}
 
 	for _, size := range payload.Sizes {
@@ -49,7 +50,14 @@ func Store(c *fiber.Ctx) error {
 
 func FindAll(c *fiber.Ctx) error {
 	var products []models.Product
-	result := database.DB.Preload("Sizes").Find(&products)
+
+	result := database.DB.Preload("Sizes")
+	category := c.Query("category")
+	if category != "" && category != "shop all" {
+		result = result.Where("category = ?", category)
+	}
+
+	result.Find(&products)
 	if result.Error != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "Products not found"})
 	}
@@ -103,6 +111,7 @@ func Update(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid price format"})
 	}
 	product.Price = price
+	product.Category = payload.Category
 
 	if err := database.DB.Where("product_id = ?", id).Delete(&models.Size{}).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to delete old sizes", "error": err.Error()})
