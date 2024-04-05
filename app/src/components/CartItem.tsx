@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { Trash } from "lucide-react";
 
 export default function CartItem() {
   return (
@@ -38,7 +38,7 @@ export default function CartItem() {
           </div>
           <div>
             <Button variant={"ghost"} className="h-auto p-2.5">
-              <FaRegTrashAlt />
+              <Trash className="h-[20px]" />
             </Button>
           </div>
         </div>

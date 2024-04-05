@@ -4,8 +4,8 @@ import Carousel from "@/components/Carousel";
 import { Button } from "@/components/ui/button";
 import axiosClient from "@/lib/axios-client";
 import { IProduct } from "@/lib/features/products/productsSlice";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { MdOutlineShoppingBag } from "react-icons/md";
+import { ShoppingBag } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function page({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<null | IProduct>(null);
@@ -44,7 +44,7 @@ export default function page({ params }: { params: { id: string } }) {
             </div>
             <div className="mt-6">
               <Button className="text-xl space-x-2 rounded-xl">
-                <MdOutlineShoppingBag />
+                <ShoppingBag className='h-[22px]' />
                 <span className="text-sm">Add to Cart</span>
               </Button>
             </div>

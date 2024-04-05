@@ -9,7 +9,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Button } from "./ui/button";
-import { MdOutlineShoppingBag } from "react-icons/md";
+import { ShoppingBag } from "lucide-react";
 import CartItem from "./CartItem";
 import { ScrollArea } from "./ui/scroll-area";
 
@@ -18,7 +18,7 @@ export default function Cart() {
     <Sheet>
       <SheetTrigger asChild>
         <Button className="text-2xl" variant={"ghost"}>
-          <MdOutlineShoppingBag />
+          <ShoppingBag className='h-[22px]' />
         </Button>
       </SheetTrigger>
       <SheetContent>

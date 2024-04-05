@@ -1,11 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-import { MdOutlineShoppingBag } from "react-icons/md";
-import { FiUser } from "react-icons/fi";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { RootState } from "@/lib/store";
@@ -21,6 +18,7 @@ import axiosClient from "@/lib/axios-client";
 import { logout } from "@/lib/features/auth/authSlice";
 import Cart from "./Cart";
 import SearchInput from "./SearchInput";
+import { User } from "lucide-react";
 
 export default function Header() {
   const { userInfo } = useAppSelector((state: RootState) => state.auth);
@@ -75,7 +73,7 @@ export default function Header() {
             ) : (
               <Button variant={"ghost"} className="text-2xl" asChild>
                 <Link href={"/auth/login"}>
-                  <FiUser />
+                  <User className='h-[22px]' />
                 </Link>
               </Button>
             )}
