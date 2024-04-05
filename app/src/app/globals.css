@@ -69,11 +69,9 @@
 
     --hover: 23 81% 69%;
   }
-}
- 
-@layer base {
+
   * {
-    @apply border-border;
+    @apply border-border focus-visible:outline-0;
   }
   body {
     @apply bg-background text-foreground;

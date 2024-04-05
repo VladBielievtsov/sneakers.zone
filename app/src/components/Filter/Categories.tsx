@@ -1,83 +1,51 @@
-"use client";
-import { useSearchParams } from "next/navigation";
-import { getCategories } from "@/lib/features/categories/categoriesActions";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { RootState } from "@/lib/store";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { getProducts } from '@/lib/features/products/productsActions';
+import { useAppDispatch } from '@/lib/hooks';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid';
+import { Button } from '../ui/button';
+import Link from 'next/link';
+import useSetSearchParams from '@/hooks/useSetSearchParams';
+import { cn } from '@/lib/utils';
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
+const CATEGORIES_OPTIONS = [
+  {id: uuidv4(), name: "Women", value: "women"},
+  {id: uuidv4(), name: "Men", value: "men"},
+  {id: uuidv4(), name: "Shop All", value: "shop-all"},
+]
 
-type newCategoriesType = {
-  checked: boolean;
-  created_at: string;
-  id: number;
-  name: string;
-};
-
-export default function useCategories() {
-  const [newCategories, setNewCategories] = useState<newCategoriesType[]>([]);
+export default function Categories() {
   const dispatch = useAppDispatch();
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
+  const selectedCategory = searchParams.get("category")
 
-  const categoriesStatus = useAppSelector(
-    (state: RootState) => state.categories.status
-  );
-
-  let { categories } = useAppSelector((state: RootState) => state.categories);
-
-  useLayoutEffect(() => {
-    if (categoriesStatus === "idle") {
-      dispatch(getCategories());
-    }
-  }, [categoriesStatus, dispatch]);
+  const [category, setCategory] = useState({
+    category: CATEGORIES_OPTIONS.some(option => option.value === selectedCategory) ? selectedCategory : "none"
+  }) 
 
   useEffect(() => {
-    const arr =
-      categories?.map((c, id) => ({
-        ...c,
-        checked: searchParams.getAll("category").includes(c.name),
-      })) || [];
-    setNewCategories(arr);
-  }, [categories]);
+    setCategory((prev) => ({
+      ...prev, 
+      sort: CATEGORIES_OPTIONS.some(option => option.value === selectedCategory) ? selectedCategory : "none"
+    }))
+    dispatch(getProducts(searchParams.toString()));
+  }, [selectedCategory])
 
-  const handleCheckboxChange = (id: number, checked: boolean) => {
-    setNewCategories((prev) =>
-      prev.map((category) =>
-        category.id === id ? { ...category, checked } : category
-      )
-    );
-  };
-
-  return {
-    categories: newCategories,
-    renderCategories: (
-      <Accordion type="single" collapsible defaultValue="item-1">
-        <AccordionItem value="item-1" className="border-0">
-          <AccordionTrigger className="">Categories</AccordionTrigger>
-          <AccordionContent className="space-y-4">
-            {newCategories?.map((c) => (
-              <div className="" key={c.id}>
-                <Label className="flex items-center space-x-2 cursor-pointer">
-                  <Checkbox
-                    checked={c.checked}
-                    onCheckedChange={(checked: boolean) => {
-                      handleCheckboxChange(c.id, checked);
-                    }}
-                  />{" "}
-                  <span>{c.name}</span>
-                </Label>
-              </div>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    ),
-  };
+  return (
+    <div className="flex justify-center w-full">
+      {CATEGORIES_OPTIONS.map(c => (
+        <Button key={c.id} variant={"link"} asChild>
+          <Link 
+            href={"?" + useSetSearchParams({key: "category", value: c.value})}
+            className={cn({
+              "opacity-100": c.value === selectedCategory,
+              "opacity-50": c.value !== selectedCategory
+            })}
+          >
+            {c.name}
+          </Link>
+        </Button>
+      ))}
+    </div>
+  )
 }

@@ -53,8 +53,19 @@ func FindAll(c *fiber.Ctx) error {
 
 	result := database.DB.Preload("Sizes")
 	category := c.Query("category")
-	if category != "" && category != "shop all" {
+	if category != "" && category != "shop-all" {
 		result = result.Where("category = ?", category)
+	}
+
+	sortParam := c.Query("sort")
+	switch sortParam {
+	case "price-asc":
+		result = result.Order("price ASC")
+	case "price-desc":
+		result = result.Order("price DESC")
+	case "", "none":
+	default:
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid sort parameter"})
 	}
 
 	result.Find(&products)
