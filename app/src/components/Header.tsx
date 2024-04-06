@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -19,6 +18,7 @@ import { logout } from "@/lib/features/auth/authSlice";
 import Cart from "./Cart";
 import SearchInput from "./SearchInput";
 import { User } from "lucide-react";
+import Logo from "./Logo";
 
 export default function Header() {
   const { userInfo } = useAppSelector((state: RootState) => state.auth);
@@ -33,16 +33,12 @@ export default function Header() {
 
   return (
     <header
-      className={cn(
-        "bg-color fixed left-0 right-0 top-0 z-50  backdrop-blur-sm"
-      )}
+      className={"bg-color fixed left-0 right-0 top-0 z-50  backdrop-blur-sm"}
     >
       <div className="container mx-auto p-4">
         <div className="flex items-center justify-between pb-4 border-b border-zinc-500">
           <div className="lg:pr-6">
-            <Link href={"/sneakers"} className="text-2xl">
-              <span className="text-xl">Sneakers.zone</span>
-            </Link>
+            <Logo />
           </div>
           <div className="max-w-2xl w-full">
             <SearchInput />
@@ -57,7 +53,7 @@ export default function Header() {
                     <AvatarFallback>{userInfo.fullname[0]}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel>{userInfo.fullname}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="p-0">

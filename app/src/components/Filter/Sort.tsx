@@ -9,7 +9,7 @@ import { getProducts } from '@/lib/features/products/productsActions'
 import { useAppDispatch } from '@/lib/hooks'
 
 const SORT_OPTIONS = [
-  {name: "All", value: "none"},
+  {name: "New", value: "none"},
   {name: "Price: Low to High", value: "price-asc"},
   {name: "Price: High to Low", value: "price-desc"},
 ] as const
