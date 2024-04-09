@@ -19,7 +19,7 @@ func Store(c *fiber.Ctx) error {
 
 	var payload models.ProductRequest
 	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "errors": err.Error()})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": err.Error()})
 	}
 
 	price, err := decimal.NewFromString(payload.Price.String())
@@ -43,7 +43,7 @@ func Store(c *fiber.Ctx) error {
 	}
 
 	if err := database.DB.Create(&newProduct).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create product", "error": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to create product"})
 	}
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"product": &newProduct}})
 }

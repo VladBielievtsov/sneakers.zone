@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle } from 'lucide-react';
+import Link from "next/link";
 
 export default function Products() {
   
@@ -14,12 +15,14 @@ export default function Products() {
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Products</h2>
           <div>
-            <Button className="space-x-2"><PlusCircle className="h-5" /><span>Add New</span></Button>
+            <Button asChild>
+              <Link href={"/panel/products/add"} className="space-x-2"><PlusCircle className="h-5" /><span>Add New</span></Link>
+            </Button>
           </div>
         </div>
       </div>
       <div className="grid flex-1 items-start gap-4 md:gap-8">
-        <Card x-chunk="dashboard-06-chunk-0">
+        <Card>
           <CardContent>
             <Table>
               <TableHeader>
@@ -28,7 +31,7 @@ export default function Products() {
                     <span className="sr-only">Image</span>
                   </TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
+                  {/* <TableHead>Status</TableHead> */}
                   <TableHead className="hidden md:table-cell">
                     Price
                   </TableHead>

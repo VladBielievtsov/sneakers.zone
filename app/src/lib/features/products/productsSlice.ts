@@ -1,5 +1,5 @@
 import { SerializedError, createSlice } from "@reduxjs/toolkit";
-import { getProducts } from "./productsActions";
+import { addProduct, getProducts } from "./productsActions";
 
 export interface IProduct {
   id: number;
@@ -12,7 +12,7 @@ export interface IProduct {
 
 export interface ProductsState {
   products: null | IProduct[];
-  error: null | SerializedError | undefined;
+  error: string | null | undefined;
   status: "idle" | "loading" | "succeeded" | "failed";
 }
 
@@ -27,6 +27,7 @@ const productsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
+    // GET ALL
     builder.addCase(getProducts.pending, (state) => {
       state.status = "loading";
       state.products = null;
@@ -34,13 +35,25 @@ const productsSlice = createSlice({
     });
     builder.addCase(getProducts.fulfilled, (state, { payload }) => {
       state.status = "succeeded";
-      //@ts-ignore
       state.products = payload.data.products;
     });
     builder.addCase(getProducts.rejected, (state, { payload }) => {
       state.status = "failed";
-      state.error = payload;
+      state.error = payload?.message;
     });
+    // STORE
+    builder.addCase(addProduct.pending, (state) => {
+      state.status = "loading"
+      state.error = null;
+    })
+    builder.addCase(addProduct.fulfilled, (state, { payload }) => {
+      state.status = "succeeded"
+      state.products?.push(payload.data.product);
+    })
+    builder.addCase(addProduct.rejected, (state, { payload }) => {
+      state.status = "failed"
+      state.error = payload?.message;
+    })
   },
 });
 

@@ -6,6 +6,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import StoreProvider from "./StoreProvider";
 import AuthPrivider from "./AuthPrivider";
+import { Toaster } from "@/components/ui/toaster";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <AuthPrivider>{children}</AuthPrivider>
+            <Toaster />
           </ThemeProvider>
         </StoreProvider>
       </body>

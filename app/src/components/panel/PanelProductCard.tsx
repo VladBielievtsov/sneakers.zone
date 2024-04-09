@@ -34,9 +34,9 @@ export default function PanelProductCard({id, title, price, createdAt}: PanelPro
           {title}
         </Link>
       </TableCell>
-      <TableCell>
+      {/* <TableCell>
         <Badge variant="outline">Draft</Badge> 
-      </TableCell>
+      </TableCell> */}
       <TableCell className="hidden md:table-cell">
         ${price}
       </TableCell>
