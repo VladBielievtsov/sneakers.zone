@@ -170,7 +170,7 @@ func Delete(c *fiber.Ctx) error {
 	if err := database.DB.Delete(&product).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to delete product", "error": err.Error()})
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Product deleted successfully"})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Product deleted successfully", "id": id})
 }
 
 // func saveFile(file *multipart.FileHeader, filename string) error {

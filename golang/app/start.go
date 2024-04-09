@@ -36,7 +36,7 @@ func Start() error {
 	micro.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-		AllowMethods:     "GET, POST",
+		AllowMethods:     "GET, POST, DELETE",
 		AllowCredentials: true,
 	}))
 

@@ -66,3 +66,22 @@ export const addProduct = createAsyncThunk<
     }
   }
 });
+
+export const deleteProduct = createAsyncThunk<
+  { id: string },
+  string,
+  { rejectValue: ErrorType }
+>("/products/delete", async (id, { rejectWithValue }) => {
+  try {
+    const {data} = await axiosClient.delete(`/product/${id}`);
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ErrorType>
+    if (axiosError) {
+      return rejectWithValue({
+        message: axiosError.response?.data.message,
+        status: axiosError.response?.data.status
+      })
+    }
+  }
+});

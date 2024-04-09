@@ -1,8 +1,8 @@
 import { SerializedError, createSlice } from "@reduxjs/toolkit";
-import { addProduct, getProducts } from "./productsActions";
+import { addProduct, deleteProduct, getProducts } from "./productsActions";
 
 export interface IProduct {
-  id: number;
+  id: string;
   title: string;
   description: string;
   price: string;
@@ -51,6 +51,19 @@ const productsSlice = createSlice({
       state.products?.push(payload.data.product);
     })
     builder.addCase(addProduct.rejected, (state, { payload }) => {
+      state.status = "failed"
+      state.error = payload?.message;
+    })
+    // DELETE
+    builder.addCase(deleteProduct.pending, (state) => {
+      state.status = "loading"
+      state.error = null;
+    })
+    builder.addCase(deleteProduct.fulfilled, (state, { payload }) => {
+      state.status = "succeeded"
+      state.products = state.products?.filter((product) => product.id !== payload.id) || null;
+    })
+    builder.addCase(deleteProduct.rejected, (state, { payload }) => {
       state.status = "failed"
       state.error = payload?.message;
     })
