@@ -39,7 +39,6 @@ export default function LoginForm() {
   });
   const router = useRouter();
   const [isError, setIsError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { loading, error } = useAppSelector((state: RootState) => state.auth);
 
   const dispatch = useAppDispatch();
@@ -64,6 +63,12 @@ export default function LoginForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {error && (
+          <p className="text-red-500 pt-0">
+            Error: 
+            {error}
+          </p>
+        )}
         <FormField
           control={form.control}
           name="email"
@@ -90,7 +95,7 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Login</Button>
+        <Button type="submit" disabled={loading}>{loading ? "Loading" : "Login"}</Button>
       </form>
     </Form>
   );

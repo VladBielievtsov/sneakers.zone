@@ -12,6 +12,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sneakers", request.url));
   }
 
+  if (
+    !token && request.nextUrl.pathname.startsWith("/panel")
+  ) {
+    return NextResponse.redirect(new URL("/sneakers", request.url));
+  }
+
   return NextResponse.next();
 }
 

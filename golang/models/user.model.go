@@ -23,6 +23,7 @@ type UserResponse struct {
 	ID        uuid.UUID `json:"id,omitempty"`
 	Fullname  string    `json:"fullname,omitempty"`
 	Email     string    `json:"email,omitempty"`
+	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
@@ -32,6 +33,7 @@ func FilterUser(user *User) UserResponse {
 		ID:        *user.ID,
 		Fullname:  user.Fullname,
 		Email:     user.Email,
+		Role:      user.Role,
 		CreatedAt: *user.CreatedAt,
 		UpdatedAt: *user.UpdatedAt,
 	}

@@ -61,6 +61,13 @@ export default function Header() {
                       Profile
                     </Link>
                   </DropdownMenuItem>
+                  {userInfo.role === "admin" && (
+                    <DropdownMenuItem className="p-0">
+                      <Link href={"/panel/dashboard"} className="px-2 py-1.5 w-full">
+                        Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem className="cursor-pointer" onClick={onLogout}>
                     Logout
                   </DropdownMenuItem>

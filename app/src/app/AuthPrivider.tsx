@@ -2,8 +2,8 @@
 
 import { user } from "@/lib/features/auth/authActions";
 import { useAppDispatch } from "@/lib/hooks";
-import { setCookie } from "cookies-next";
-import React, { useLayoutEffect } from "react";
+import { hasCookie } from "cookies-next";
+import React, { useEffect } from "react";
 
 export default function AuthPrivider({
   children,
@@ -16,8 +16,10 @@ export default function AuthPrivider({
     await dispatch(user());
   };
 
-  useLayoutEffect(() => {
-    getUser();
+  useEffect(() => {
+    if (hasCookie("ACCESS_TOKEN")) {
+      getUser();
+    }
   }, []);
 
   return <div>{children}</div>;

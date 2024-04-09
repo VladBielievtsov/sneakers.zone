@@ -5,6 +5,7 @@ import { Badge } from '../ui/badge'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
 import { MoreHorizontal } from 'lucide-react'
+import Link from 'next/link'
 
 interface PanelProductCardProps {
   id: number
@@ -29,7 +30,9 @@ export default function PanelProductCard({id, title, price, createdAt}: PanelPro
         />
       </TableCell>
       <TableCell className="font-medium">
-        {title}
+        <Link href={"/product/" + id} className='hover:underline'>
+          {title}
+        </Link>
       </TableCell>
       <TableCell>
         <Badge variant="outline">Draft</Badge> 

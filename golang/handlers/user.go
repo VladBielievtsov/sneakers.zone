@@ -81,7 +81,7 @@ func Confirmation(c *fiber.Ctx) error {
 	if err := database.DB.Save(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to confiem email", "error": err.Error()})
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": fiber.Map{"user": user}})
+	return c.Redirect("http://localhost:3000/sneakers")
 }
 
 func Login(c *fiber.Ctx) error {
@@ -94,7 +94,7 @@ func Login(c *fiber.Ctx) error {
 	var user models.User
 	result := database.DB.First(&user, "email = ?", strings.ToLower(payload.Email))
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid Email or Password"})
 	}
 
 	if !user.IsConfirmed {
@@ -103,7 +103,7 @@ func Login(c *fiber.Ctx) error {
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid email or Password", "error": err.Error()})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "message": "Invalid Email or Password"})
 	}
 
 	tokenByte := jwt.New(jwt.SigningMethodHS256)
