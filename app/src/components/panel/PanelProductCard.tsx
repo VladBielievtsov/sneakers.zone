@@ -76,9 +76,9 @@ export default function PanelProductCard({id, title, price, createdAt}: PanelPro
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <button className='w-full cursor-pointer'>
+              <Link href={"/panel/products/" + id} className='w-full cursor-pointer'>
                 Edit
-              </button>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <button className='w-full cursor-pointer' onClick={() => removeProduct(id)}>

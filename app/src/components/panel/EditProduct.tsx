@@ -13,10 +13,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { PlusCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addProduct } from '@/lib/features/products/productsActions';
+import { addProduct, editProduct } from '@/lib/features/products/productsActions';
 import { RootState } from '@/lib/store';
 import { useToast } from '../ui/use-toast';
 import { useRouter } from 'next/navigation';
+import { IProduct } from '@/lib/features/products/productsSlice';
+
+interface EditProductProps {
+  product: IProduct | null
+}
 
 const formSchema = z
   .object({
@@ -36,23 +41,20 @@ const formSchema = z
       .min(1, { message: "This field has to be filled." })
   })
 
-export default function AddProduct() {
+export default function EditProduct({product}: EditProductProps) {
+  
   const {push} = useRouter()
   const { error } = useAppSelector((state: RootState) => state.products);
 
-  const [sizes, setSizes] = useState<{id: string, size: string, quantity: number}[]>([{
-    id: uuidv4(),
-    size: "",
-    quantity: 0
-  }])
+  const [sizes, setSizes] = useState<{id: number | string, productID: string, size: string, quantity: number}[]>(product?.sizes || [])
   const [sizesError, setSizesError] = useState<string | null>(null)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      price: "",
-      category: ""
+      title: product?.title,
+      description: product?.description,
+      price: product?.price,
+      category: product?.category
     },
   });
 
@@ -69,7 +71,7 @@ export default function AddProduct() {
   const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const newSizes = sizes.map(({id, ...rest}) => rest)
+    const newSizes = sizes.map(({id, productID, ...rest}) => rest)
     let emptyValuesFound = newSizes.some(item => hasEmptyValues(item));
     if (emptyValuesFound) {
       setSizesError("There are empty values in the 'Sizes'");
@@ -77,10 +79,10 @@ export default function AddProduct() {
     } 
 
     await dispatch(
-      addProduct({...values, sizes: newSizes})
+      editProduct({...values, id: product?.id || "", sizes: newSizes})
     ).then(() => { 
       toast({
-        description: "Product has been created",
+        description: "Product has been updated",
       })
       push("/panel/products")
     })
@@ -89,17 +91,18 @@ export default function AddProduct() {
   const addSizeField = () => {
     setSizes([...sizes, {
       id: uuidv4(),
+      productID: product?.id || "",
       size: "",
       quantity: 0
     }])
   }
 
-  const removeSizeField = (id: string) => {
+  const removeSizeField = (id: number | string) => {
     const newArr = sizes.filter(s => s.id !== id)
     setSizes(newArr)
   }
 
-  const handleSizeChange = (id: string, field: string, value: string) => {
+  const handleSizeChange = (id: string | number, field: string, value: string) => {
     setSizesError(null)
     const updated = sizes.map(s => {
       if (s.id === id) {
@@ -193,9 +196,24 @@ export default function AddProduct() {
             <div className='flex flex-col gap-4'>
               {sizes.map(size => (
                 <div key={size.id} className='flex gap-x-4'>
-                  <Input placeholder='size' type='text' onChange={(e) => handleSizeChange(size.id, "size", e.target.value)} />
-                  <Input placeholder='quantity' min={0} type='number' onChange={(e) => handleSizeChange(size.id, "quantity", e.target.value)} />
-                  <Button type='button' className='p-2 h-auto' onClick={() => removeSizeField(size.id)}><XCircle /></Button>
+                  <Input 
+                    placeholder='size' 
+                    type='text'
+                    value={size.size} 
+                    onChange={(e) => handleSizeChange(size.id, "size", e.target.value)} 
+                  />
+                  <Input 
+                    placeholder='quantity' 
+                    type='number' 
+                    value={size.quantity || 0}
+                    min={0}
+                    onChange={(e) => handleSizeChange(size.id, "quantity", e.target.value)} 
+                  />
+                  <Button 
+                    type='button' 
+                    className='p-2 h-auto' 
+                    onClick={() => removeSizeField(size.id)}
+                  ><XCircle /></Button>
                 </div>
               ))}
             </div>
@@ -205,11 +223,15 @@ export default function AddProduct() {
               </p>
             )}
             <div className='flex justify-center mt-4'>
-              <Button type='button' className='p-2 h-auto' onClick={addSizeField}><PlusCircle /></Button>
+              <Button 
+                type='button' 
+                className='p-2 h-auto' 
+                onClick={addSizeField}
+              ><PlusCircle /></Button>
             </div>
           </div>
         </div>
-        <Button type="submit">Add Product</Button>
+        <Button type="submit">Edit Product</Button>
       </form>
     </Form>
   )

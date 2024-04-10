@@ -46,6 +46,10 @@ interface AddProductRequest {
   sizes: SizesRequest[]
 }
 
+interface EditProductRequest extends AddProductRequest {
+  id: string
+}
+
 export const addProduct = createAsyncThunk<
   { data: { product: IProduct } },
   AddProductRequest,
@@ -53,6 +57,27 @@ export const addProduct = createAsyncThunk<
 >("/products/add", async ({title, category, description, price, sizes}, { rejectWithValue }) => {
   try {
     const { data } = await axiosClient.post("/product", {
+      title, category, description, price, sizes
+    });
+    return data;
+  } catch (error) {
+    const axiosError = error as AxiosError<ErrorType>
+    if (axiosError) {
+      return rejectWithValue({
+        message: axiosError.response?.data.message,
+        status: axiosError.response?.data.status
+      })
+    }
+  }
+});
+
+export const editProduct = createAsyncThunk<
+  { data: { product: IProduct } },
+  EditProductRequest,
+  { rejectValue: ErrorType }
+>("/products/edit", async ({id, title, category, description, price, sizes}, { rejectWithValue }) => {
+  try {
+    const { data } = await axiosClient.put(`/product/${id}`, {
       title, category, description, price, sizes
     });
     return data;
