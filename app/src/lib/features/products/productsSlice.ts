@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { addProduct, deleteProduct, editProduct, getProducts } from "./productsActions";
 
-interface Sizes {
+export interface Sizes {
   id: number
   size: string
   quantity: number

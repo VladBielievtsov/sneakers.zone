@@ -24,7 +24,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   }, []);
 
   return (
-    <div>
+    <div className='pb-10'>
       <div className="pb-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Edit Product</h2>

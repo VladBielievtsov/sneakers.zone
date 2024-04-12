@@ -71,6 +71,8 @@ export default function EditProduct({product}: EditProductProps) {
   const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(sizes);
+    
     const newSizes = sizes.map(({id, productID, ...rest}) => rest)
     let emptyValuesFound = newSizes.some(item => hasEmptyValues(item));
     if (emptyValuesFound) {
@@ -103,12 +105,14 @@ export default function EditProduct({product}: EditProductProps) {
   }
 
   const handleSizeChange = (id: string | number, field: string, value: string) => {
+    console.log(value);
+    
     setSizesError(null)
     const updated = sizes.map(s => {
       if (s.id === id) {
         return {
           ...s,
-          [field]: field === "quantity" ? parseInt(value) : value
+          [field]: field === "quantity" ? parseInt(value) || 0 : value.toString()
         }
       }
       return s
@@ -205,7 +209,7 @@ export default function EditProduct({product}: EditProductProps) {
                   <Input 
                     placeholder='quantity' 
                     type='number' 
-                    value={size.quantity || 0}
+                    value={size.quantity}
                     min={0}
                     onChange={(e) => handleSizeChange(size.id, "quantity", e.target.value)} 
                   />
