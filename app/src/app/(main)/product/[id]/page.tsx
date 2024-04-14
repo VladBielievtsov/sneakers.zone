@@ -2,15 +2,20 @@
 
 import Carousel from "@/components/Carousel";
 import SelectSize from "@/components/SelectSize";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import axiosClient from "@/lib/axios-client";
+import { addToCart } from "@/lib/features/cart/cartSlice";
 import { IProduct, Sizes } from "@/lib/features/products/productsSlice";
+import { useAppDispatch } from "@/lib/hooks";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+
 export default function page({ params }: { params: { id: string } }) {
+  const [isOpenAlert, setIsOpenAlert] = useState<boolean>(false)
   const [product, setProduct] = useState<null | IProduct>(null);
   const [selectedSize, setSelectedSize] = useState<Sizes | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -19,7 +24,6 @@ export default function page({ params }: { params: { id: string } }) {
     try {
       const { data } = await axiosClient.get(`/product/${params.id}`);
       setProduct(data.data.product);
-      
     } catch (error) {
       console.log(error);
     }
@@ -29,14 +33,16 @@ export default function page({ params }: { params: { id: string } }) {
     getProduct();
   }, []);
 
+  const dispatch = useAppDispatch()
+
   const handleAddToCard = () => {
     setError(null)
     if (!selectedSize) {
       setError("Select size")
       return
     }
-
-    console.log({product: product?.id, size: selectedSize});
+    dispatch(addToCart({product: product, size: selectedSize, quantity: 1}))
+    setIsOpenAlert(true)
   }
 
   return (
@@ -85,10 +91,26 @@ export default function page({ params }: { params: { id: string } }) {
                 {product.sizes.every(size => size.quantity === 0) ? (
                   <p className="bg-zinc-100 inline-block">Out of Stock</p>
                 ) : (
+                  <>
                   <Button className="text-xl space-x-2 rounded-xl">
                     <ShoppingBag className='h-[22px]' />
                     <span className="text-sm" onClick={() => handleAddToCard()}>Add to Cart</span>
                   </Button>
+                  <AlertDialog open={isOpenAlert}>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Success</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          product successfully added to cart
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setIsOpenAlert(false)}>Continue shopping</AlertDialogCancel>
+                        <AlertDialogAction>Go to cart</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  </>
                 )}
                 {error && (
                   <p className="text-red-500 pt-4">

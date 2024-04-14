@@ -1,11 +1,22 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Trash } from "lucide-react";
+import { CartItem, removeFromCart } from "@/lib/features/cart/cartSlice";
+import { useAppDispatch } from "@/lib/hooks";
 
-export default function CartItem() {
+interface CartItemProps {
+  cartItem: CartItem
+}
+
+export default function CartItem({cartItem}: CartItemProps) {
+  const dispatch = useAppDispatch()
+
+  const handleRemoveFromCard = () => {
+    dispatch(removeFromCart(cartItem.id))
+  }
   return (
     <div className="flex pt-4 items-start">
-      <Link href={"/"} className="w-[80px] h-[80px] overflow-hidden rounded-xl">
+      <Link href={`/product/${cartItem.product.id}`} className="w-[80px] h-[80px] overflow-hidden rounded-xl">
         <img
           src="https://static.staff-clothes.com/uploads/media/image_product/0003/37/b3f8333e28404f78aa0db1369a27ba33.jpeg"
           alt="title"
@@ -13,21 +24,21 @@ export default function CartItem() {
         />
       </Link>
       <div className="pl-4 flex-1">
-        <Link href={"/"} className="uppercase font-bold hover:underline">
-          Standout Backpack
+        <Link href={`/product/${cartItem.product.id}`} className="uppercase font-bold hover:underline">
+          {cartItem.product.title}
         </Link>
         <div className="pt-1.5 flex space-x-3">
           <p className="text-sm text-zinc-500">
-            Size: <b className="text-black">Large</b>
+            Size: <b className="text-black">{cartItem.size.size}</b>
           </p>
-          <p className="text-sm text-zinc-500">
+          {/* <p className="text-sm text-zinc-500">
             Color: <b className="text-black">White</b>
-          </p>
+          </p> */}
         </div>
         <div className="flex justify-between">
           <div></div>
           <div>
-            <b>$76.00</b>
+            <b>${cartItem.product.price}</b>
           </div>
         </div>
         <div className="flex justify-end divide-x divide-zinc-500 items-center">
@@ -37,7 +48,7 @@ export default function CartItem() {
             </Button>
           </div>
           <div>
-            <Button variant={"ghost"} className="h-auto p-2.5">
+            <Button variant={"ghost"} className="h-auto p-2.5" onClick={handleRemoveFromCard}>
               <Trash className="h-[20px]" />
             </Button>
           </div>

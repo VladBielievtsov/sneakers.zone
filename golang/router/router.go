@@ -29,4 +29,6 @@ func Routes(micro *fiber.App) {
 		router.Put("/:id", middleware.DeserializeUser, handlers.Update)
 		router.Delete("/:id", middleware.DeserializeUser, handlers.Delete)
 	})
+
+	micro.Post("/create-checkout-session", handlers.CreateCheckoutSession)
 }
