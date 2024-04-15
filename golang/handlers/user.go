@@ -81,7 +81,7 @@ func Confirmation(c *fiber.Ctx) error {
 	if err := database.DB.Save(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "message": "Failed to confiem email", "error": err.Error()})
 	}
-	return c.Redirect("http://localhost:3000/sneakers")
+	return c.Redirect("http://localhost:3000/auth/login")
 }
 
 func Login(c *fiber.Ctx) error {

@@ -1,7 +1,4 @@
-import {
-  SerializedError,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "@/lib/axios-client";
 import { UserInfo } from "./authSlice";
 import { AxiosError } from "axios";

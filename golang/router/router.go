@@ -31,4 +31,8 @@ func Routes(micro *fiber.App) {
 	})
 
 	micro.Post("/create-checkout-session", handlers.CreateCheckoutSession)
+
+	micro.Route("/customers", func(router fiber.Router) {
+		router.Get("/", handlers.FindAllCustomers)
+	})
 }

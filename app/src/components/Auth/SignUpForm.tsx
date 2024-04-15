@@ -22,6 +22,7 @@ import { useState } from "react";
 import { RootState } from "@/lib/store";
 import { redirect } from "next/navigation";
 import { setCookie } from "cookies-next";
+import { useToast } from "../ui/use-toast";
 
 const formSchema = z
   .object({
@@ -66,6 +67,7 @@ export default function SignUpForm() {
   const [isError, setIsError] = useState<string>("");
 
   const dispatch = useAppDispatch();
+  const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const res = await dispatch(
@@ -79,8 +81,10 @@ export default function SignUpForm() {
     if (res.meta.requestStatus === "rejected") {
       setIsError("User not found");
     } else {
-      // @ts-ignore
-      setCookie("ACCESS_TOKEN", res.payload?.token);
+      toast({
+        title: "Check you email",
+        description: `We've just sent and email to you at ${values.email}.`,
+      })
       router.push("/sneakers");
     }
   }
